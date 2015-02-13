@@ -115,7 +115,7 @@ func lngTimer() {
 	if err != nil {
 		log.Fatalf("timeTo类型转换错误,%s", err.Error())
 	}
-	timer := time.NewTicker(10 * time.Second)
+	timer := time.NewTicker(1 * time.Hour)
 	for {
 		select {
 		case <-timer.C:
