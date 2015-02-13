@@ -3,43 +3,34 @@ package main
 import (
 	// "fmt"
 	"log"
-	"os"
-	// "runtime"
-	"time"
+	"runtime"
 )
 
-func Add(x, y int, c chan int) {
+func Add(c chan int) {
+	a := 0
+	for i := 0; i < 100; i++ {
+		a += i
+		log.Printf("print a %d", a)
+	}
 
-	c <- x + y
+	c <- 1
+}
+
+func Print(c chan int) {
+	for i := 0; i < 100; i++ {
+		log.Printf("print d %d", i)
+	}
+	c <- 1
 }
 
 func main() {
-	// log.Println(runtime.NumCPU())
-	// runtime.GOMAXPROCS(runtime.NumCPU())
-	logfile, err := os.OpenFile("temp.log", os.O_RDWR|os.O_CREATE, 0)
-	if err != nil {
-		log.Println(err.Error())
-		os.Exit(-1)
-	}
-	defer logfile.Close()
-	logger := log.New(logfile, "\r\n", log.Ldate|log.Ltime|log.Llongfile)
-	logger.Println(time.Now())
-	max := 1000000
-	ch := make(chan int, max)
-	for i := 0; i < max; i++ {
-		go Add(i, i, ch)
-	}
-	for i := 0; i < max; i++ {
-		value, ok := <-ch
-		if ok {
-			close(ch)
-		}
-		logger.Println(value)
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	ch := make(chan int, 2)
+	go Print(ch)
+	go Add(ch)
+
+	for i := 0; i < 2; i++ {
+		<-ch
 	}
 
-	// for _, ch := range 50000 {
-	// 	value := <-ch
-	// 	fmt.Println(value)
-	// }
-	logger.Println(time.Now())
 }
